@@ -12,8 +12,8 @@ on:
         required: false
         type: string
   schedule:
-    # 7:00 PM IST = 13:30 UTC. Fires daily; harmless on non-match days (script exits early).
-    - cron: "30 13 * * *"
+    # 6:00 PM IST = 12:30 UTC. Fires daily; harmless on non-match days (script exits early).
+    - cron: "30 12 * * *"
 
 jobs:
   set-captaincy:
