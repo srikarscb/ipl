@@ -4,13 +4,16 @@ on:
   workflow_dispatch:
     inputs:
       captain:
-        description: "Captain (last name substring used to match the player row)"
-        required: true
+        description: "Captain (last name substring). Empty = use CURRENT_CAPTAIN repo variable."
+        required: false
         type: string
       vice_captain:
-        description: "Vice-captain (last name substring)"
-        required: true
+        description: "Vice-captain (last name substring). Empty = use CURRENT_VICE_CAPTAIN repo variable."
+        required: false
         type: string
+  schedule:
+    # 7:00 PM IST = 13:30 UTC. Fires daily; harmless on non-match days (script exits early).
+    - cron: "30 13 * * *"
 
 jobs:
   set-captaincy:
@@ -40,6 +43,6 @@ jobs:
           IMAP_PASSWORD: ${{ secrets.IMAP_PASSWORD }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          CAPTAIN: ${{ inputs.captain }}
-          VICE_CAPTAIN: ${{ inputs.vice_captain }}
+          CAPTAIN: ${{ inputs.captain || vars.CURRENT_CAPTAIN }}
+          VICE_CAPTAIN: ${{ inputs.vice_captain || vars.CURRENT_VICE_CAPTAIN }}
         run: uv run python scripts/set_captaincy.py
