@@ -1,0 +1,45 @@
+name: Set Captaincy
+
+on:
+  workflow_dispatch:
+    inputs:
+      captain:
+        description: "Captain (last name substring used to match the player row)"
+        required: true
+        type: string
+      vice_captain:
+        description: "Vice-captain (last name substring)"
+        required: true
+        type: string
+
+jobs:
+  set-captaincy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        run: uv python install 3.11
+
+      - name: Install dependencies
+        run: uv sync --frozen
+
+      - name: Install Playwright Chromium
+        run: uv run playwright install --with-deps chromium
+
+      - name: Run set_captaincy.py
+        env:
+          IPL_EMAIL: ${{ secrets.IPL_EMAIL }}
+          IMAP_EMAIL: ${{ secrets.IMAP_EMAIL }}
+          IMAP_PASSWORD: ${{ secrets.IMAP_PASSWORD }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          CAPTAIN: ${{ inputs.captain }}
+          VICE_CAPTAIN: ${{ inputs.vice_captain }}
+        run: uv run python scripts/set_captaincy.py
